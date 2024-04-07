@@ -4,42 +4,57 @@ t_log* logger;
 
 int iniciar_servidor(void)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
-	int socket_servidor;
-
-	struct addrinfo hints, *servinfo, *p;
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
-
-	// Creamos el socket de escucha del servidor
-
-	// Asociamos el socket a un puerto
-
-	// Escuchamos las conexiones entrantes
-
-	freeaddrinfo(servinfo);
-	log_trace(logger, "Listo para escuchar a mi cliente");
-
-	return socket_servidor;
+  // Quitar esta línea cuando hayamos terminado de implementar la funcion
+  // assert(!"no implementado!");
+  
+  int socket_servidor;
+  
+  struct addrinfo hints, *servinfo;
+  
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;
+  
+  getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+  
+  // Creamos el socket de escucha del servidor
+  socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+  
+  // Asociamos el socket a un puerto
+  bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+  
+  // Escuchamos las conexiones entrantes
+  int ret = listen(socket_servidor, SOMAXCONN);
+  if (ret == -1)
+  {
+    log_error(logger, "Error al escuchar las conexiones entrantes");
+  }
+  
+  freeaddrinfo(servinfo);
+  log_trace(logger, "Listo para escuchar a mi cliente");
+  
+  return socket_servidor;
 }
 
 int esperar_cliente(int socket_servidor)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
-
-	// Aceptamos un nuevo cliente
-	int socket_cliente;
-	log_info(logger, "Se conecto un cliente!");
-
-	return socket_cliente;
+  // Quitar esta línea cuando hayamos terminado de implementar la funcion
+  // assert(!"no implementado!");
+  
+  // Aceptamos un nuevo cliente
+  int socket_cliente;
+  printf("Esperando cliente...\n");
+  socket_cliente = accept(socket_servidor, NULL, NULL);
+  if (socket_cliente == -1)
+  {
+    log_error(logger, "Error al aceptar un nuevo cliente");
+  } else
+  {
+    log_info(logger, "Se conecto un cliente!");
+  }
+  
+  return socket_cliente;
 }
 
 int recibir_operacion(int socket_cliente)
